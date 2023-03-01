@@ -1,0 +1,80 @@
+version: '3.3'
+services:
+  processor_application:
+      container_name: processor_application1
+      image: diocande175/processor:1.0
+      depends_on: 
+        - mongodb
+      volumes: 
+        - sharefile:/var/lib/docker/volumes/sharefile/_data
+      networks:
+        - default_network
+
+  web_server_application:
+      container_name: web_server_application1
+      ports: 
+        - "8080:8080"
+      image: diocande175/webservertools:2.0
+      depends_on: 
+        - processor_application
+      volumes: 
+        - sharefile:/var/lib/docker/volumes/sharefile/_data
+      networks:
+        - default_network
+       
+  mongodb:
+      image: bsaifullin/mongodb-armv7l:3.2
+      container_name: mongodb_1
+      environment:
+      - MONGODB_INITDB_ROOT_USERNAME=administrator
+      - MONGODB_INITDB_ROOT_PASSWORD=Admin123.
+      volumes:
+      - /home/barry/mongodb/database:/data/db
+      ports:
+      - 8081:8081
+      restart: unless-stopped
+      networks:
+       - default_network
+  
+  rest_api_mongodb:
+      image: diocande175/rest-api-mongo:1.0
+      container_name: rest_api_mongo_1
+      ports:
+       - 5678:5678
+      restart: unless-stopped
+      depends_on: 
+        - mongodb
+      networks:
+       - default_network
+      hostname: rest_api_mongo_1
+
+  web_gui_mongodb:
+      image: diocande175/web-gui-mongo:1.0
+      container_name: web_gui_mongo_1
+      restart: unless-stopped
+      depends_on: 
+        - rest_api_mongodb
+      ports:
+       - 8082:80
+      networks:
+       - default_network
+
+  # output_reporter:
+  #     image: output_reporter:latest
+  #     container_name: output_reporter_1
+  #     restart: unless-stopped
+  #     depends_on: 
+  #       - processor_application
+  #     volumes: 
+  #       - sharefile:/var/lib/docker/volumes/sharefile/_data
+  #     networks:
+  #      - default_network
+
+
+volumes:
+  sharefile:
+
+networks:
+  default_network:
+    driver: bridge   
+  
