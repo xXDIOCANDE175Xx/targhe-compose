@@ -35,6 +35,23 @@ services:
       restart: unless-stopped
       networks:
        - default_network
+
+  mongodb_backup:
+    image: debian:latest
+    container_name: mongodb_backup
+    volumes:
+      - /home/barry/mongodb/backup:/backup
+    command: >
+      sh -c "apt-get update && apt-get install -y cron mongodb-clients &&
+             echo '0 2 * * * mongodump --host mongodb_1 --username administrator --password Admin123. --authenticationDatabase admin --out /backup/`date +\\%Y-\\%m-\\%d`' > /etc/cron.d/mongodb-backup &&
+             chmod 0644 /etc/cron.d/mongodb-backup &&
+             crontab /etc/cron.d/mongodb-backup &&
+             cron -f"
+    depends_on:
+      - mongodb
+    restart: unless-stopped
+    networks:
+      - default_network
   
   rest_api_mongodb:
       image: diocande175/rest-api-mongo:1.0
