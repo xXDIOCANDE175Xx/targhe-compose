@@ -2,7 +2,7 @@ version: '3.3'
 services:
   processor_application:
       container_name: processor_application1
-      image: diocande175/processor:1.0
+      image: diocande175/processor:1.3
       depends_on: 
         - mongodb
       volumes: 
