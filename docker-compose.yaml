@@ -7,6 +7,7 @@ services:
         - mongodb
       volumes: 
         - sharefile:/var/lib/docker/volumes/sharefile/_data
+      restart: unless-stopped
       networks:
         - default_network
 
@@ -19,6 +20,7 @@ services:
         - processor_application
       volumes: 
         - sharefile:/var/lib/docker/volumes/sharefile/_data
+      restart: unless-stopped
       networks:
         - default_network
        
